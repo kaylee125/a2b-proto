@@ -1,0 +1,241 @@
+{
+ "asof": "2026-10-09",
+ "stale_days": 90,
+ "ltv": {
+  "regulated": 0.4,
+  "other": 0.7
+ },
+ "loan_cap": [
+  [
+   150000,
+   60000
+  ],
+  [
+   250000,
+   40000
+  ],
+  [
+   null,
+   20000
+  ]
+ ],
+ "dsr": {
+  "limit": 0.4,
+  "stress": 0.03,
+  "rate": 4.0,
+  "years": 30
+ },
+ "regions": {
+  "11110": {
+   "reg": true,
+   "tohu": true
+  },
+  "11140": {
+   "reg": true,
+   "tohu": true
+  },
+  "11170": {
+   "reg": true,
+   "tohu": true
+  },
+  "11200": {
+   "reg": true,
+   "tohu": true
+  },
+  "11215": {
+   "reg": true,
+   "tohu": true
+  },
+  "11230": {
+   "reg": true,
+   "tohu": true
+  },
+  "11260": {
+   "reg": true,
+   "tohu": true
+  },
+  "11290": {
+   "reg": true,
+   "tohu": true
+  },
+  "11305": {
+   "reg": true,
+   "tohu": true
+  },
+  "11320": {
+   "reg": true,
+   "tohu": true
+  },
+  "11350": {
+   "reg": true,
+   "tohu": true
+  },
+  "11380": {
+   "reg": true,
+   "tohu": true
+  },
+  "11410": {
+   "reg": true,
+   "tohu": true
+  },
+  "11440": {
+   "reg": true,
+   "tohu": true
+  },
+  "11470": {
+   "reg": true,
+   "tohu": true
+  },
+  "11500": {
+   "reg": true,
+   "tohu": true
+  },
+  "11530": {
+   "reg": true,
+   "tohu": true
+  },
+  "11545": {
+   "reg": true,
+   "tohu": true
+  },
+  "11560": {
+   "reg": true,
+   "tohu": true
+  },
+  "11590": {
+   "reg": true,
+   "tohu": true
+  },
+  "11620": {
+   "reg": true,
+   "tohu": true
+  },
+  "11650": {
+   "reg": true,
+   "tohu": true
+  },
+  "11680": {
+   "reg": true,
+   "tohu": true
+  },
+  "11710": {
+   "reg": true,
+   "tohu": true
+  },
+  "11740": {
+   "reg": true,
+   "tohu": true
+  },
+  "41111": {
+   "reg": true,
+   "tohu": true
+  },
+  "41113": {
+   "reg": false,
+   "tohu": false,
+   "check": true
+  },
+  "41115": {
+   "reg": true,
+   "tohu": true
+  },
+  "41117": {
+   "reg": true,
+   "tohu": true
+  },
+  "41135": {
+   "reg": true,
+   "tohu": true
+  },
+  "41173": {
+   "reg": true,
+   "tohu": true
+  },
+  "41310": {
+   "reg": true,
+   "tohu": true
+  },
+  "41360": {
+   "reg": false,
+   "tohu": false,
+   "check": true
+  },
+  "41450": {
+   "reg": true,
+   "tohu": true
+  },
+  "41597": {
+   "reg": true,
+   "tohu": true,
+   "check": true
+  }
+ },
+ "items": [
+  {
+   "id": "reg",
+   "label": "규제지역(조정대상·투기과열): 서울 전역, 경기 12곳(하남 포함), 2026-07 동탄·기흥·구리 추가. 무주택·처분조건부 1주택 일반 차주 LTV 40%, 그 외 지역 70%",
+   "source": "https://www.korea.kr/news/policyNewsView.do?newsId=148950973",
+   "also": [
+    "https://taxtimes.co.kr/news/article.html?no=271867"
+   ],
+   "confidence": "공식 확인(관계부처 합동 보도자료 2025-10-15, 금융위 보도자료). 2026-07 추가분(구리·동탄·기흥)은 국토부 보도자료"
+  },
+  {
+   "id": "cap",
+   "label": "수도권 주택담보대출 한도: 시가 15억 이하 6억, 15억 초과~25억 4억, 25억 초과 2억 (2025-06-27 대책, 2025-10-15 강화)",
+   "source": "https://www.korea.kr/news/policyNewsView.do?newsId=148950959",
+   "confidence": "공식 확인(금융위·관계부처 2025-10-15, 시행 2025-10-16)",
+   "also": [
+    "https://www.fnnews.com/news/202506271142053672"
+   ]
+  },
+  {
+   "id": "dsr",
+   "label": "DSR 은행 40%, 스트레스 금리 수도권·규제지역 3.0%p 하한(적용비율 100%, 6월·12월 연 2회 재산정)",
+   "source": "https://www.kukinews.com/article/view/kuk202606300123",
+   "confidence": "스트레스 금리는 금융위 공고 예고본(제2026-362호) 확인·확정본 미확인, DSR 40%는 공식 원문 미확인"
+  },
+  {
+   "id": "tohu",
+   "label": "토지거래허가구역: 서울 전역, 경기 12곳(과천·광명·성남 분당/수정/중원·수원 영통/장안/팔달·안양 동안·용인 수지·의왕·하남), 2026-07 동탄·구리·기흥. 매수 허가가 필요하고 입주 후 2년 실거주 의무가 있어 전세 낀 매수(갭투자)는 원칙적으로 어려워요(아래 특례 참조). 서울·경기 12곳은 2026-12-31까지 지정이라는 보도가 있고 연장 여부는 미정이에요",
+   "source": "https://taxtimes.co.kr/news/article.html?no=271867",
+   "also": [
+    "https://www.mt.co.kr/estate/2026/08/17/2026081711044827233"
+   ],
+   "confidence": "지정 지역은 관계부처 합동 보도자료(2025-10-15)·국토부 보도자료 확인. 만료일·연장은 2차 출처"
+  },
+  {
+   "id": "tohu_exc",
+   "label": "계속 무주택인 매수자에 한해 세입자 있는 주택의 실거주 의무를 임대차 종료일까지 유예하는 특례가 2026-05에 도입되고 2026-09에 개정(신청 기한 2027-12-31)됐어요. 갭투자를 허용하는 제도가 아니며, A를 가진 갈아타기는 대부분 해당하지 않아 이 서비스는 토허제 지역의 전세 낀 매수를 '불가'로 계산해요",
+   "source": "https://www.korea.kr/news/policyNewsView.do?newsId=148964215",
+   "confidence": "공식 확인(국토부 보도자료 2026-05-12, 2026-09-17). 개별 요건은 확인 필요",
+   "also": [
+    "https://www.mt.co.kr/estate/2026/05/11/2026051116392121727"
+   ]
+  },
+  {
+   "id": "nyj",
+   "label": "남양주 다산동: 위 지정 목록에 없음(2026-08 그린벨트 지정은 남양주 와부읍 도곡·월문·덕소리가 5년 별도 지정으로 보도됐고 다산동 언급 없음) → 비규제·비토허제로 가정",
+   "source": "https://www.mt.co.kr/estate/2026/08/17/2026081711044827233",
+   "confidence": "확인 불가(공식 고시 원문 미확인)"
+  },
+  {
+   "id": "tempo2",
+   "label": "일시적 2주택: 조정대상지역은 2026-10-01부터 기존 주택 처분 기한이 3년에서 2년으로 줄었어요(경과조치 있음). 서울·구리·하남이 해당해요",
+   "source": "https://www.korea.kr/news/policyNewsView.do?newsId=148972735",
+   "confidence": "정부 보도자료 확인, 경과조치는 2차 출처"
+  },
+  {
+   "id": "acq",
+   "label": "취득세(1주택·일시적 2주택 가정): 6억 이하 1%, 6~9억 구간식, 9억 초과 3%, 지방교육세는 취득세율의 10%, 85㎡ 초과 농특세 0.2%",
+   "source": "https://www.law.go.kr/법령/지방세법",
+   "confidence": "세율·지방교육세는 지방세법 확인, 6~9억 산식은 2차 출처, 농특세 0.2%는 확인 불가"
+  },
+  {
+   "id": "metro",
+   "label": "수원 권선구: 지정 목록(수원 영통·장안·팔달)에 없어 비규제·비토허제로 가정. 동탄: 화성시 동탄구(2026-07 코드 개편 후 41597)로 대응해 규제·토허제로 계산. 수원·성남 분당·안양 동안은 위 지정 목록 기준",
+   "source": "https://www.korea.kr/news/policyNewsView.do?newsId=148950973",
+   "confidence": "확인 필요(권선구 제외·동탄구 경계는 공식 고시와 대조하지 못함)"
+  }
+ ]
+}

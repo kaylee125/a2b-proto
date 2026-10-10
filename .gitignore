@@ -1,6 +1,6 @@
 .env
-cache/
-data/
+/cache/
+/data/
 site/data/*
 !site/data/rules.json
 __pycache__/
