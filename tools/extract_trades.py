@@ -1,4 +1,4 @@
-"""세션에서 받아 둔 캐시(서울 25구 sl_*.json.gz, 수원·분당·동안·동탄 sl_*m.json.gz, 구리·하남 loop2_rows.json)와 dasan.db(다산동)에서
+"""세션에서 받아 둔 캐시(서울 25구 sl_*.json.gz, 수원·분당·동안·동탄 sl_*m.json.gz, 의왕 sl_*w.json.gz, 구리·하남 loop2_rows.json)와 dasan.db(다산동)에서
 단지별 거래를 뽑아 data/complex_trades.json.gz 로 저장한다. 새 API 호출 없음.
   python3 tools/extract_trades.py [cache_dir=a2b-proto/cache] [dasan.db]"""
 import glob, gzip, json, re, sqlite3, sys, collections, statistics as st
@@ -11,7 +11,7 @@ D = date.fromisoformat; ROM = str.maketrans("ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ", "1
 norm = lambda n: re.sub(r"[\s\-·.,()\[\]]", "", n.translate(ROM)).replace("아파트", "")
 GU = {11110:"종로구",11140:"중구",11170:"용산구",11200:"성동구",11215:"광진구",11230:"동대문구",11260:"중랑구",11290:"성북구",11305:"강북구",11320:"도봉구",11350:"노원구",11380:"은평구",11410:"서대문구",11440:"마포구",11470:"양천구",11500:"강서구",
       11530:"구로구",11545:"금천구",11560:"영등포구",11590:"동작구",11620:"관악구",11650:"서초구",11680:"강남구",11710:"송파구",11740:"강동구",41310:"구리시",41450:"하남시",41360:"남양주시",
-      41111:"수원시 장안구",41113:"수원시 권선구",41115:"수원시 팔달구",41117:"수원시 영통구",41135:"성남시 분당구",41173:"안양시 동안구",41597:"화성시 동탄구"}
+      41111:"수원시 장안구",41113:"수원시 권선구",41115:"수원시 팔달구",41117:"수원시 영통구",41135:"성남시 분당구",41173:"안양시 동안구",41597:"화성시 동탄구",41430:"의왕시"}
 REG = {s: ("서울" if s < 20000 else "경기") for s in GU}
 rows = []                                                    # (sgg, umd, name, area, date, amount, build, floor)
 for p in sorted(glob.glob(str(C / "data" / "sl_*.json.gz"))):
