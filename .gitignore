@@ -6,3 +6,6 @@ site/data/*
 __pycache__/
 .pytest_cache/
 *.log
+.omc/
+.DS_Store
+site/__*.html
