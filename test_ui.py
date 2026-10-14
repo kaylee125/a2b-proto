@@ -38,6 +38,12 @@ const wait = ms => new Promise(r => setTimeout(r, ms)); const f = document.getEl
 if (location.search.startsWith('?stale=')) { f.src = '/?nosplash&theme=light&nomotion#/home'; try { localStorage.setItem('a2b.v1', JSON.stringify({ a: null, bs: [{ id: location.search.slice(7), type: null, tier: 1, sample: true }], plan: {}, theme: 'auto', intro: 1 })); } catch (e) {} }
 if (location.search.startsWith('?fp=')) { f.src = '/?nosplash&theme=light&nomotion#/' + decodeURIComponent(location.search.slice(4)); }
 if (location.search === '?loc=1') f.src = '/?nosplash&theme=light&nomotion#/find';
+if (location.search === '?area=1') f.src = '/?nosplash&theme=light&nomotion#/area';
+if (location.search === '?unit=1') f.src = '/?nosplash&theme=light&nomotion#/home';
+if (location.search === '?asearch=1') f.src = '/?nosplash&theme=light&nomotion#/area';
+if (location.search.startsWith('?dv=1')) f.src = '/?nosplash&theme=light&nomotion#/home';
+if (location.search === '?tourflow=1') f.src = '/?nosplash&theme=light&nomotion&tour=1#/home';
+if (location.search === '?tourauto=1') f.src = '/?theme=light&nomotion#/home';
 if (location.search === '?edit=1') f.src = '/?nosplash&theme=light&nomotion#/home';
 if (location.search === '?fab=1') f.src = '/?nosplash&theme=light&nomotion#/home';
 if (location.search.startsWith('?tip=')) { const q = new URLSearchParams(location.search); f.src = '/?nosplash&theme=light&nomotion#/c/' + q.get('id'); }
@@ -49,6 +55,45 @@ f.onload = async () => { const d = f.contentDocument, w = f.contentWindow, log =
   if (location.search.startsWith('?fp=')) { try { const until = async s => { for (let k = 0; k < 60 && !d.querySelector(s); k++) await wait(250); }; await until('[data-act^=fplan]'); const route = decodeURIComponent(location.search.slice(4)), n = Math.min(5, d.querySelectorAll('[data-act^=fplan]').length);
       for (let i = 0; i < n; i++) { f.contentWindow.location.hash = '#/' + route + '&x=' + i; await wait(300); await until('#view .card.tap [data-act^=fplan]'); const cards = [...d.querySelectorAll('#view .card.tap')].filter(c => c.querySelector('[data-act^=fplan]')), c = cards[i]; if (!c) break; const lab = c.querySelector('.badge').textContent.trim(), nm = c.querySelector('.rc-name').textContent; c.querySelector('[data-act^=fplan]').click(); await until('#res .res-big'); await wait(200);
         log.push('카드' + i + '|' + lab + ' ' + nm + '|' + (d.querySelector('#res .res-big') || {textContent: 'none'}).textContent.trim()); } } catch (e) { log.push('ERR ' + e.message); }
+    document.getElementById('out').textContent = log.join('\\n'); return; }
+  if (location.search.startsWith('?dv=1')) { try { await wait(1500); f.contentWindow.location.hash = '#/find?loc=11350'; await wait(1500); f.contentWindow.location.hash = '#/area'; await wait(1200); f.contentWindow.location.hash = '#/c/' + new URLSearchParams(location.search).get('id'); await wait(1200);
+      log.push('데이터요청=' + JSON.stringify(w.performance.getEntriesByType('resource').map(e => e.name).filter(u => /\\/data\\//.test(u)).map(u => u.replace(/^.*\\/data\\//, 'data/'))));
+    } catch (e) { log.push('ERR ' + e.message); }
+    document.getElementById('out').textContent = log.join('\\n'); return; }
+  if (location.search === '?tourflow=1') { try { const click = s => { const e = d.querySelector(s); if (!e) throw new Error('없음 ' + s); e.click(); }, tx = s => d.querySelector(s).textContent.replace(/\\s+/g, ' '), on = () => d.querySelector('#sheet').classList.contains('on'), ls = () => JSON.parse(w.localStorage.getItem('a2b.v1') || '{}');
+      await wait(1200); for (let i = 0; i < 5; i++) { log.push('단계' + i + '=' + tx('#sh-h') + '|' + tx('#sh-b .tour-h') + '|' + tx('#sh-b .tour-next')); if (i < 4) { click('#sh-b .tour-next'); await wait(200); } }
+      click('#sh-b .tour-next'); await wait(300); log.push('끝=' + on());
+      click('[data-go="#/settings"]'); await wait(500); click('[data-act="tour:0"]'); await wait(300); log.push('다시=' + tx('#sh-h') + '|' + on());
+      d.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await wait(300); log.push('Esc=' + on());
+      click('[data-act="tour:0"]'); await wait(200); for (let i = 0; i < 3; i++) { click('#sh-b .tour-next'); await wait(150); } click('#sh-b [data-go="#/find"]'); await wait(700); log.push('링크=' + w.location.hash + '|' + on());
+      click('#sh-b .tour-skip') ;
+    } catch (e) { log.push('ERR ' + e.message); }
+    document.getElementById('out').textContent = log.join('\\n'); return; }
+  if (location.search === '?tourauto=1') { try { const on = () => d.querySelector('#sheet').classList.contains('on'), ls = () => JSON.parse(w.localStorage.getItem('a2b.v1') || '{}'), tx = s => d.querySelector(s).textContent.replace(/\\s+/g, ' ');
+      await wait(4500); log.push('첫방문=' + on() + '|' + tx('#sh-h') + '|' + ls().tour);
+      d.querySelector('#bd').click(); await wait(300); log.push('닫힘=' + on()); f.onload = null; f.contentWindow.location.reload(); await wait(1500);
+      const d2 = f.contentDocument; await wait(4000); log.push('재방문=' + d2.querySelector('#sheet').classList.contains('on'));
+    } catch (e) { log.push('ERR ' + e.message); }
+    document.getElementById('out').textContent = log.join('\\n'); return; }
+  if (location.search === '?asearch=1') { try { const click = s => { const e = d.querySelector(s); if (!e) throw new Error('없음 ' + s); e.click(); }, ls = () => JSON.parse(w.localStorage.getItem('a2b.v1') || '{}'), tx = s => d.querySelector(s).textContent.replace(/\\s+/g, ' '), until = async s => { for (let k = 0; k < 40 && !d.querySelector(s); k++) await wait(250); };
+      const type = async v => { const i = d.querySelector('#aq'); i.value = v; i.dispatchEvent(new w.Event('input', { bubbles: true })); await wait(150); };
+      await until('[data-act=aloc]'); click('[data-act=aloc]'); await wait(200); await type('정자'); log.push('정자=' + tx('#al'));
+      click('[data-act="atd:41135:정자동"]'); await wait(200); log.push('선택후=' + tx('#al').slice(0, 90) + '|' + JSON.stringify(ls().areas) + '|' + (d.querySelector('#aq') ? d.querySelector('#aq').value : '입력칸 사라짐'));
+      await type('성남 정자'); log.push('성남정자=' + tx('#al')); await type('분당'); log.push('분당=' + tx('#al').slice(0, 130)); await type('zzzz'); log.push('없음=' + tx('#al')); await type(''); log.push('비움=' + tx('#al').slice(0, 80));
+      click('[data-act=adone]'); await wait(800); log.push('뷰=' + tx('#view').slice(0, 400));
+    } catch (e) { log.push('ERR ' + e.message); }
+    document.getElementById('out').textContent = log.join('\\n'); return; }
+  if (location.search === '?unit=1') { try { const click = s => { const e = d.querySelector(s); if (!e) throw new Error('없음 ' + s); e.click(); }, ls = () => JSON.parse(w.localStorage.getItem('a2b.v1') || '{}'), tx = s => d.querySelector(s).textContent.replace(/\\s+/g, ' ');
+      await wait(1000); log.push('전=' + tx('#bar') + '|' + ls().unit); click('[data-act="unit:py"]'); await wait(700); log.push('후=' + tx('#bar') + '|' + ls().unit + '|' + tx('#view').slice(0, 300));
+      click('[data-go="#/settings"]'); await wait(500); log.push('설정=' + tx('#view').slice(0, 120)); click('#view [data-act="unit:m2"]'); await wait(400); click('[data-go="#/home"]'); await wait(800); log.push('복귀=' + tx('#bar') + '|' + ls().unit);
+    } catch (e) { log.push('ERR ' + e.message); }
+    document.getElementById('out').textContent = log.join('\\n'); return; }
+  if (location.search === '?area=1') { try { const click = s => { const e = d.querySelector(s); if (!e) throw new Error('없음 ' + s); e.click(); }, ls = () => JSON.parse(w.localStorage.getItem('a2b.v1') || '{}'), until = async s => { for (let k = 0; k < 40 && !d.querySelector(s); k++) await wait(250); };
+      await until('[data-act=aloc]'); log.push('처음=' + JSON.stringify(ls().areas)); click('[data-act=aloc]'); await wait(200); click('[data-act="adong:11350"]'); await wait(200); click('[data-act="atd:11350:월계동"]'); await wait(200);
+      log.push('동시트=' + d.querySelector('#sh-b').textContent.replace(/\\s+/g, ' ').slice(0, 60)); click('[data-act=aloc]'); await wait(200); click('[data-act="at:11680"]'); await wait(200); click('[data-act=adone]'); await wait(800);
+      log.push('선택=' + JSON.stringify(ls().areas)); log.push('뷰=' + d.querySelector('#view').textContent.replace(/\\s+/g, ' ').slice(0, 500)); click('#view [data-act="atd:41360:다산동"]'); await wait(600); log.push('빼기후=' + JSON.stringify(ls().areas));
+      click('#view [data-act="atd:11350:월계동"]'); await wait(300); click('#view [data-act="at:11680"]'); await wait(500); log.push('비움=' + JSON.stringify(ls().areas) + ' ' + d.querySelector('#view').textContent.replace(/\\s+/g, ' ').slice(0, 70));
+    } catch (e) { log.push('ERR ' + e.message); }
     document.getElementById('out').textContent = log.join('\\n'); return; }
   if (location.search === '?loc=1') { try { await wait(1000); const click = s => d.querySelector(s).click(); click('[data-act=floc]'); await wait(300); log.push('시트=' + d.querySelector('#sh-b').textContent.replace(/\\s+/g, ' ')); click('[data-act="loc:11350"]'); await wait(200); log.push('구선택=' + w.localStorage.getItem('a2b.v1').slice(0, 400)); click('[data-act="dong:11350"]'); await wait(300); click('[data-act^="dloc:11350:"]'); await wait(200); log.push('동선택=' + JSON.stringify(JSON.parse(w.localStorage.getItem('a2b.v1')).find)); click('[data-act=floc]'); await wait(200); click('[data-act=fdone]'); await wait(900); log.push('요약=' + d.querySelector('#locsum').textContent); } catch (e) { log.push('ERR ' + e.message); }
     document.getElementById('out').textContent = log.join('\\n'); return; }
@@ -125,7 +170,7 @@ def won(v):
 def pct(r, d=1): return f"{'+' if r >= 0 else '-'}{abs(r * 100):.{d}f}%"
 
 
-ROUTES = ["home", f"c/{MINE['id']}", f"c/{MINE['id']}?t=112&range=1y", f"c/{NOTREND['id']}", f"c/{FB['id']}", f"cmp?b={BEXAMPLES[0]['id']}", f"cmp?b={BEXAMPLES[1]['id']}", f"c/{BEXAMPLES[0]['id']}?range=1y", "plan", f"plan?b={BEXAMPLES[1]['id']}", "settings", "find", "find?loc=11350&income=12000&cash=10000", "find?loc=11350,41360&mode=gap&income=12000&cash=10000&tohu=1", "find?loc=11350:월계동&cash=0&aloan=60000&cls=가능,빠듯,불가"]
+ROUTES = ["home", f"c/{MINE['id']}", f"c/{MINE['id']}?t=112&range=1y", f"c/{NOTREND['id']}", f"c/{FB['id']}", f"cmp?b={BEXAMPLES[0]['id']}", f"cmp?b={BEXAMPLES[1]['id']}", f"c/{BEXAMPLES[0]['id']}?range=1y", "plan", "area", "area?loc=11350", "area?loc=41360:다산동,11350:월계동,11680", f"plan?b={BEXAMPLES[1]['id']}", "settings", "find", "find?loc=11350&income=12000&cash=10000", "find?loc=11350,41360&mode=gap&income=12000&cash=10000&tohu=1", "find?loc=11350:월계동&cash=0&aloan=60000&cls=가능,빠듯,불가"]
 
 
 @pytest.mark.parametrize("route", ROUTES)
@@ -140,9 +185,9 @@ def test_route_renders_cleanly(base, route):
 
 def test_home_cards_match_data(base):
     t = text(view(dom(base, "home"))); m = MINE["trend"]
-    assert f"{pct(m['r'])} 6개월" in t and f"{pct(m['lo'])} ~ {pct(m['hi'])}" in t and m["s"] in t
-    d = MINE["dong"]; assert f"{MINE['umd']} {d['n']}개 단지" in t and f"{d['n']}개 중 {d['rank']}위" in t and f"중위 {pct(d['med'])}" in t
-    assert f"주변 대비 {(m['r'] - d['med']) * 100:+.1f}%p" in t
+    assert f"{pct(m['r'])} 최근 6개월" in t and f"{pct(m['lo'])} ~ {pct(m['hi'])}" in t and m["s"] in t
+    d = MINE["dong"]; assert f"{MINE['umd']} {d['n']}개 단지" in t and f"{d['n']}개 중 {d['rank']}위" in t and f"중간값 {pct(d['med'])}" in t
+    diff = (m['r'] - d['med']) * 100; assert f"중간값보다 {abs(diff):.1f}%p {'높아요' if diff >= 0 else '낮아요'}" in t
     e = det(MINE)["est"]["98|2"]; assert won(e[0]) in t and f"{won(e[1])} ~ {won(e[2])}" in t           # 98㎡ 9층 = 고층
     for b in BEXAMPLES: assert b["name"] in t and pct(b["trend"]["r"]) in t and b["px"] > MINE["px"] * 1.15       # 예시 후보는 A보다 15% 이상 비싼 상급지 이동
     assert t.count("후보 B · 예시") == 2 and "예시 단지로 채워져 있어요" in t
@@ -209,7 +254,7 @@ def test_pickers_open(base):
 
 def test_dark_theme_and_settings(base):
     t = text(view(dom(base, "settings", "nosplash&theme=dark&nomotion")))
-    assert "2026-08-31" in t and "6,154개" in t and "2016-10 ~ 2026-10" in t and "화면 테마" in t and "내 정보 초기화" in t
+    assert "2026-08-31" in t and "6,251개" in t and "2016-10 ~ 2026-10" in t and "화면 테마" in t and "내 정보 초기화" in t
 
 
 def test_pick_commit_delete_reset_flow(base):
@@ -424,7 +469,7 @@ def test_location_sheet_and_dong_selection(base):
     html = chrome(["--virtual-time-budget=15000", "--dump-dom", f"{base}/__t.html?loc=1"]); out = re.search(r'<pre id="out">(.*?)</pre>', html, re.S).group(1)
     assert "ERR" not in out, out
     sheet_txt = out.split("시트=")[1].split("\n")[0]
-    assert sheet_txt.count("토허제") == 33 and "남양주시(다산동)" in sheet_txt and "노원구" in sheet_txt                    # 서울 25 + 구리·하남 + 수원 영통·장안·팔달 + 분당 + 동안 + 동탄 = 33곳이 토허제
+    assert sheet_txt.count("토허제") == 34 and "남양주시(다산동)" in sheet_txt and "노원구" in sheet_txt                    # 서울 25 + 구리·하남 + 수원 영통·장안·팔달 + 분당 + 동안 + 동탄 + 의왕 = 34곳이 토허제
     assert '"locs":["11350"]' in out.split("구선택=")[1].split("\n")[0] and "11350:" in out.split("동선택=")[1].split("\n")[0]
     assert "노원구 " in out.split("요약=")[1]
 
@@ -465,3 +510,165 @@ def test_bad_inputs_do_not_break_plan_or_find(base):
     for q in (f"plan?b={b['id']}&sale=-50000&income=9000&yrs=0&rate=abc", "find?loc=11350&income=12000&cash=10000&yrs=0&debt=-500"):
         t = text(view(dom(base, q)))
         assert "NaN" not in t and "Infinity" not in t and "JS 오류" not in t, (q, t[:300])
+
+
+AREA = json.loads((SITE / "data" / "area.json").read_text(encoding="utf-8")); AA = AREA["a"]
+num = lambda v: str(int(v)) if float(v).is_integer() else str(v)
+
+
+def test_area_view_shows_numbers_from_data(base):
+    """관심 입지 화면의 숫자는 area.json 값과 같고, 비정상 값(NaN 등)이 없다."""
+    k = "11350:월계동"; a = AA[k]; t = text(view(dom(base, f"area?loc={k}")))
+    assert "노원구 월계동" in t and f"단지 {a['nc']}개" in t and f"{a['t12']:,}건" in t and f"단지당 12개월 거래 {num(a['per12'])}건" in t
+    assert pct(a["t12"] / a["t12p"] - 1) in t and f"{a['t3']}건" in t
+    if a["idx"]: assert pct(a["ch"][1]) in t and pct(a["ch"][0]) in t
+    assert not re.search(r"NaN|Infinity|undefined", t), t[:200]
+    assert "가격 추이" in t and "거래량 추이" in t and "과거 기록이며" in t
+
+
+def test_area_default_is_my_dong_and_thin_dong_points_to_gu(base):
+    t = text(view(dom(base, "area"))); assert "남양주시 다산동" in t                                        # 저장값이 없으면 내 집(A)의 동
+    thin = next(k for k, a in AA.items() if ":" in k and a["idx"] is None and a["nc"] >= 3)
+    t = text(view(dom(base, f"area?loc={thin}"))); assert "가격 추이는 내지 않았어요" in t and "최근 12개월 거래" in t and "보기" in t   # 얇은 동: 가격 추이는 생략, 환금성은 표시, 구·시로 안내
+    assert not re.search(r"NaN|Infinity|undefined", t)
+
+
+def test_area_selection_flow(base):
+    html = chrome(["--virtual-time-budget=20000", "--dump-dom", f"{base}/__t.html?area=1"]); out = __import__("html").unescape(re.search(r'<pre id="out">(.*?)</pre>', html, re.S).group(1))
+    assert "ERR" not in out, out
+    assert '처음=["41360:다산동"]' in out and "월계동" in out.split("동시트=")[1].split("\n")[0]
+    assert '선택=["41360:다산동","11350:월계동","11680"]' in out and "노원구 월계동" in out and "강남구" in out and '빼기후=["11350:월계동","11680"]' in out
+    assert "비움=[]" in out and "관심 있는 동이나 구·시를 고르면" in out
+
+
+PYK = 400 / 121
+PY_ROUTES = ["home", f"c/{MINE['id']}", f"c/{BEXAMPLES[0]['id']}?range=1y", f"cmp?b={BEXAMPLES[0]['id']}", f"plan?b={BEXAMPLES[0]['id']}", "find?loc=11350&income=12000&cash=10000", "area?loc=41360:다산동,11350:월계동"]
+
+
+@pytest.mark.parametrize("route", PY_ROUTES)
+def test_pyeong_mode_shows_no_m2_numbers(base, route):
+    """?unit=py 이면 어느 화면에도 '숫자㎡'가 남지 않고 평으로 표시된다."""
+    t = text(view(dom(base, route, "nosplash&theme=light&nomotion&unit=py"))).split("적용한 규칙")[0]                # 규칙 카드의 법적 기준(85㎡)은 ㎡로 남는다
+    assert not re.search(r"\d㎡", t), re.findall(r".{25}\d㎡", t)[:3]
+    assert re.search(r"\d평", t) and "NaN" not in t
+
+
+def test_pyeong_values_are_converted_from_m2(base):
+    t = text(view(dom(base, f"c/{MINE['id']}", "nosplash&theme=light&nomotion&unit=py")))
+    assert f"{98 / PYK:.1f}평 · 28건" in t and f"{112 / PYK:.1f}평 · 4건" in t           # 평형 칩(98㎡ 28건, 112㎡ 4건)
+    t = text(view(dom(base, "area?loc=11350", "nosplash&theme=light&nomotion&unit=py"))); assert f"{84 / PYK:.1f}평 환산 시세" in t
+
+
+def test_unit_toggle_button_switches_and_persists(base):
+    html = chrome(["--virtual-time-budget=20000", "--dump-dom", f"{base}/__t.html?unit=1"]); out = __import__("html").unescape(re.search(r'<pre id="out">(.*?)</pre>', html, re.S).group(1))
+    assert "ERR" not in out, out
+    before, after, st_, back = (out.split(k + "=")[1].split("\n")[0] for k in ("전", "후", "설정", "복귀"))
+    assert "98㎡" in before and before.endswith("|m2")
+    assert f"{98 / PYK:.1f}평" in after and "98㎡" not in after and "|py|" in after
+    assert "면적 단위" in st_ and "98㎡" in back and back.endswith("|m2")
+
+
+def test_area_sheet_search(base):
+    html = chrome(["--virtual-time-budget=20000", "--dump-dom", f"{base}/__t.html?asearch=1"]); out = __import__("html").unescape(re.search(r'<pre id="out">(.*?)</pre>', html, re.S).group(1))
+    assert "ERR" not in out, out
+    g = lambda k: out.split(k + "=")[1].split("\n")[0]
+    assert "성남시 분당구 정자동" in g("정자") and "동" in g("정자")                                               # 동 이름으로 검색
+    sel = g("선택후"); assert '["41360:다산동","41135:정자동"]' in sel and sel.endswith("|정자")                       # 선택해도 검색어와 입력칸이 유지됨
+    assert "성남시 분당구 정자동" in g("성남정자")                                                                   # 여러 단어는 모두 포함돼야 함(공백 무시)
+    assert g("분당").startswith("성남시 분당구 ✕") or "성남시 분당구 구·시" in g("분당")                                 # 구·시가 동보다 먼저
+    assert "맞는 입지가 없어요" in g("없음") and "서울" in g("비움") and "성남시 분당구 정자동" in g("뷰")
+
+
+# ---------- UX 개선(루프 1~3)을 고정하는 테스트 ----------
+def test_plan_has_sticky_result_and_live_amount_text(base):
+    """자금 계획: 결과 요약이 위에 고정되고(입력 중에도 보임), 입력 전 현금 기준임을 알리며, 입력칸 옆에 한글 금액이 보인다."""
+    b = BEXAMPLES[0]; html = dom(base, f"plan?b={b['id']}&sale=100000&buy=120000"); v = view(html); t = text(v)
+    assert 'id="pstick"' in v and "B로 갈아타려면 부족한 돈" in t and "보유 현금 입력 전(0원 기준)" in t
+    assert 'data-fm="sale"' in v and "10억" in t and "A를 팔 때" in t and "B를 살 때" in t and "내 자금" in t
+    assert "보유 현금 입력 전" not in text(view(dom(base, f"plan?b={b['id']}&sale=100000&buy=120000&cash=30000")))      # 현금을 넣으면 안내가 사라짐
+
+
+def test_home_summary_card_matches_plan(base):
+    """홈 맨 위 '갈아타기 한눈에' 요약이 자금 계획 화면과 같은 부족/여유 금액을 보여준다."""
+    h = text(view(dom(base, "home"))); assert "A → B 갈아타기 한눈에" in h and "자금 계획 자세히" in h and "1 내 집 고르기 2 후보 비교 3 필요한 돈 확인" in h
+    m = re.search(r"(부족한 돈|남는 돈) ([0-9억만 ,]+?) B에 필요한 돈", h); assert m, h[:400]
+    b = BEXAMPLES[0]; p = text(view(dom(base, f"plan?b={b['id']}")))
+    assert m.group(2).strip() in p                                                                          # 같은 금액이 자금 계획 결과에도 있다
+
+
+def test_detail_has_next_action_on_top(base):
+    t = text(view(dom(base, f"c/{BEXAMPLES[0]['id']}"))); assert "이 후보로 자금 계획" in t and "A와 비교" in t          # 후보로 담긴 단지: 다음 단계
+    assert "조건으로 후보 찾기" in text(view(dom(base, f"c/{MINE['id']}")))                                       # 내 집: 후보 찾기로
+    other = next(c for c in C if c["trend"] and c["trend"]["m"] == "E" and c["id"] not in {b["id"] for b in BEXAMPLES} and c["id"] != MINE["id"] and c["n12"] >= 30)
+    assert "로 후보에 추가" in text(view(dom(base, f"c/{other['id']}")))                                          # 아직 후보가 아닌 단지: 추가 버튼
+
+
+def test_find_filters_and_tohu_notice(base):
+    v = view(dom(base, "find?loc=11350&income=12000&cash=10000")); t = text(v)
+    assert '<select id="fsort"' in v and "정렬" in t and "보여줄 결과" in t and "더 정확하게 계산하려면" in t         # 정렬은 선택 상자, 핵심 입력 먼저
+    assert "선택한 입지의 단지는 모두 토지거래허가구역" in t and 'chip reg">토허제' not in v                       # 전부 토허제면 카드마다 반복하지 않고 한 번만 안내
+    assert "적용한 규칙" in t and "<details" in v                                                              # 긴 규칙 안내는 접힘
+
+
+def test_keyboard_and_chart_accessibility(base):
+    html = dom(base, "home"); v = view(html)
+    assert re.search(r'class="card tap"[^>]*tabindex="0"[^>]*role="button"|role="button"[^>]*tabindex="0"', v)       # 카드 전체를 누르는 요소가 키보드로 닿음
+    assert 'role="img"' in v and "aria-label" in v
+    d = view(dom(base, f"c/{MINE['id']}")); assert 'role="img" aria-label="가격 흐름 그래프"' in d and "점선은 거래가 모자라" in d    # 끊긴 구간을 점선으로 잇고 설명
+
+
+def test_area_compare_table_and_rank_percent(base):
+    t = text(view(dom(base, "area?loc=41360:다산동,41135:정자동")))
+    assert "한눈에 비교" in t and "12개월 변화" in t and "하락기 낙폭" in t and "단지당 거래" in t and "(상위 " in t
+    assert "한눈에 비교" not in text(view(dom(base, "area?loc=41360:다산동")))                                    # 한 곳만 고르면 비교 표 없음
+
+
+def test_settings_has_glossary_after_unit_and_theme(base):
+    t = text(view(dom(base, "settings"))); assert t.index("면적 단위") < t.index("화면 테마") < t.index("용어 설명") < t.index("데이터 기준")
+    assert "가능·빠듯·불가" in t and "환금성" in t and "중간값" in t
+
+
+# ---------- 온보딩 가이드 ----------
+def _out(base, q):
+    html = chrome(["--virtual-time-budget=40000", "--dump-dom", f"{base}/__t.html?{q}"]); return __import__("html").unescape(re.search(r'<pre id="out">(.*?)</pre>', html, re.S).group(1))
+
+
+def test_tour_opens_by_param_and_has_five_steps(base):
+    html = dom(base, "home", "nosplash&theme=light&nomotion&tour=1")
+    assert re.search(r'<div id="sheet" class="on"[^>]*>', html) and re.search(r'id="sh-h">사용 가이드 1/5<', html)          # 시트가 열려 있고 제목이 1/5
+    t = text(html); assert "갈아탈 때 필요한 걸 한곳에서 봐요" in t and "건너뛰기" in t and "투자 권유가 아니고" in t
+
+
+def test_tour_flow_steps_replay_escape_and_links(base):
+    out = _out(base, "tourflow=1"); assert "ERR" not in out, out
+    g = lambda k: out.split(k + "=")[1].split("\n")[0]
+    titles = ["갈아탈 때 필요한 걸 한곳에서 봐요", "먼저 내 집(A)과 후보(B)를 정해요", "숫자는 이렇게 읽어요", "후보와 입지를 둘러봐요", "마지막으로 필요한 돈을 확인해요"]
+    for i, ti in enumerate(titles): assert f"사용 가이드 {i + 1}/5|{ti}|" in g(f"단계{i}"), (i, g(f"단계{i}"))
+    assert g("단계0").endswith("다음") and g("단계4").endswith("시작하기")                                           # 마지막 단계만 '시작하기'
+    assert g("끝") == "false"                                                                                       # 시작하기 → 닫힘
+    assert g("다시").startswith("사용 가이드 1/5") and g("다시").endswith("true")                                    # 설정에서 다시 열기
+    assert g("Esc") == "false"                                                                                      # Esc 로 닫힘
+    assert "#/find" in g("링크") and g("링크").endswith("false")                                                    # 단계 4의 줄을 누르면 해당 화면으로 이동하고 가이드는 닫힘
+
+
+def test_tour_autostarts_once_for_first_visit(base):
+    out = _out(base, "tourauto=1"); assert "ERR" not in out, out
+    g = lambda k: out.split(k + "=")[1].split("\n")[0]
+    assert g("첫방문").startswith("true|사용 가이드 1/5") and g("첫방문").endswith("|1")                              # 처음 방문: 자동으로 뜨고 저장됨
+    assert g("닫힘") == "false" and g("재방문") == "false"                                                           # 다시 방문하면 뜨지 않음
+
+
+def test_tour_entrypoints_on_home_and_settings(base):
+    assert "사용 가이드" in text(view(dom(base, "home"))) and 'data-act="tour:0"' in view(dom(base, "home"))
+    t = text(view(dom(base, "settings"))); assert "사용 가이드 다시 보기" in t and t.index("화면 테마") < t.index("사용 가이드") < t.index("용어 설명")
+
+
+
+def test_data_requests_carry_asset_version(base):
+    """호스팅이 캐시 헤더를 못 바꿔도 갱신된 데이터가 보이도록, 모든 데이터 요청에 index.html 의 ?v= 가 붙는다."""
+    v = re.search(r'app\.js\?(v=\d+)', (SITE / "index.html").read_text(encoding="utf-8")).group(1)
+    out = _out(base, f"dv=1&id={MINE['id']}"); assert "ERR" not in out, out
+    urls = json.loads(out.split("데이터요청=")[1].split("\n")[0])
+    kinds = {u.split("?")[0].split("/")[1].split(".")[0] for u in urls}
+    assert {"index", "rules", "cand", "hist", "area", "c"} <= kinds, kinds                                         # 홈·찾기·입지·상세에서 쓰는 데이터를 모두 읽음
+    assert urls and all(u.endswith("?" + v) for u in urls), [u for u in urls if not u.endswith("?" + v)][:3]
