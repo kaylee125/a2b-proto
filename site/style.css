@@ -15,6 +15,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .bar-top .t{font-weight:700;font-size:17px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar-top .ibtn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center}
 .bar-top .ibtn:active{background:rgba(255,255,255,.14)}
+.bar-top .unit{display:flex;flex:none;border:1px solid rgba(255,255,255,.45);border-radius:15px;overflow:hidden}.bar-top .unit button{padding:4px 10px;font-size:12px;font-weight:700;color:#fff;opacity:.75}.bar-top .unit button.on{background:#fff;color:var(--navy);opacity:1}
 .bar-top svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .logo{width:26px;height:26px}
 .myreg{display:flex;align-items:center;justify-content:space-between;padding:4px 0 16px;cursor:pointer}
@@ -148,3 +149,56 @@ table.sens{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}t
 :root[data-theme="dark"] .badge.ok{color:#4FC79A}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .badge.ok{color:#4FC79A}}
 .locrow{display:flex;align-items:center;gap:8px}.locrow .pick{flex:1}
+
+/* UX 루프 1: 고정 요약, 한글 금액, 끊긴 차트 안내, 홈 요약 */
+.pstick{position:sticky;top:0;z-index:6;margin:-14px -14px 12px;padding:10px 14px;background:var(--card);box-shadow:0 3px 10px rgba(30,42,90,.14);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pstick .ps-k{display:block;font-size:11.5px;color:var(--muted);font-weight:600}.pstick .ps-v{font-size:22px;font-weight:800;letter-spacing:-.4px}.pstick .ps-v.short{color:var(--up)}.pstick .ps-v.surplus{color:var(--down)}
+.pstick .ps-r{font-size:11.5px;color:var(--muted);text-align:right;line-height:1.45}.pstick .ps-note{color:var(--up);font-weight:700}
+.fgrp{font-size:12px;font-weight:800;color:var(--muted);margin:14px 0 2px;letter-spacing:.2px}.fgrp:first-of-type{margin-top:4px}
+.fin{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none}.fmt{font-size:12px;color:var(--muted);font-weight:600}
+.sumcard .sum-route{font-weight:700;margin:2px 0 6px;font-size:14px}.sumcard .sum-main{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}.sumcard .sum-main span{font-size:13px;color:var(--muted);font-weight:600}.sumcard .sum-main b{font-size:28px;font-weight:800;letter-spacing:-.6px}.sumcard .sum-main b.short{color:var(--up)}.sumcard .sum-main b.surplus{color:var(--down)}
+.sumbtn{padding:9px 14px;font-size:13px}.sumbtn.main{background:var(--navy);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sumbtn.main{background:var(--accent);color:#1B2340}}
+:root[data-theme="dark"] .sumbtn.main{background:var(--accent);color:#1B2340}
+
+/* UX 루프 2: 색 의미 정리(토허제는 경고 앰버), 필터 라벨·선택 상자, 상세 다음 행동, 첫 실행 3단계 */
+.chip.reg{background:rgba(227,168,87,.22);color:#9A6A12}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.reg{color:#F0C070}}
+:root[data-theme="dark"] .chip.reg{color:#F0C070}
+.flab{font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 2px}
+.sortrow{display:flex;align-items:center;gap:10px;margin:10px 0 4px}
+.sel{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--chip);color:var(--ink);font:inherit;font-size:14px;font-weight:600}
+.act-row{gap:8px;margin-top:12px;flex-wrap:wrap}.act-row .chip{padding:9px 16px;font-size:13.5px}
+.chip.act-main{background:var(--navy);color:#fff}.chip.act-sub{background:var(--chip);color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.act-main{background:var(--accent);color:#1B2340}}
+:root[data-theme="dark"] .chip.act-main{background:var(--accent);color:#1B2340}
+.steps{display:flex;gap:8px;margin:8px 0 6px;flex-wrap:wrap}.steps span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--ink);background:var(--chip);border-radius:99px;padding:4px 10px}.steps i{font-style:normal;width:18px;height:18px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:11px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps i{background:var(--accent);color:#1B2340}}
+:root[data-theme="dark"] .steps i{background:var(--accent);color:#1B2340}
+#tabs button{font-size:11px}
+
+/* UX 루프 3: 포커스·터치 영역·글자 크기, 용어 설명, 더 정확하게, 비교 표 */
+button:focus-visible,[role=button]:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+.chip{font-size:12px}.field .hint{font-size:12px}.chips button,.chip.tap{min-height:34px}
+.adv{margin-top:6px;border-top:1px solid var(--line)}.advsum{cursor:pointer;padding:12px 0;font-size:14px;font-weight:700;list-style:none}.advsum::-webkit-details-marker{display:none}.advsum::before{content:"▸ ";color:var(--muted)}.adv[open]>.advsum::before{content:"▾ "}
+.gl{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--line)}.gl:last-child{border-bottom:0}.gl b{font-size:13.5px}.gl span{font-size:13px;color:var(--muted);line-height:1.45}
+.linkbtn{color:var(--down);font-weight:700;font-size:inherit;text-decoration:underline;padding:2px 0}
+table.cmpt{width:100%;border-collapse:collapse;font-size:12.5px}table.cmpt th,table.cmpt td{padding:8px 4px;text-align:right;border-bottom:1px solid var(--line)}table.cmpt th:first-child,table.cmpt td:first-child{text-align:left;color:var(--muted);font-weight:600;white-space:nowrap}table.cmpt th{font-size:12px;vertical-align:bottom}
+
+/* 온보딩 가이드 */
+.tour-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tour-dots{display:flex;gap:6px}.tour-dots i{width:8px;height:8px;border-radius:99px;background:var(--line);transition:.2s}.tour-dots i.on{width:24px;background:var(--navy)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tour-dots i.on{background:var(--accent)}}
+:root[data-theme="dark"] .tour-dots i.on{background:var(--accent)}
+.tour-skip{font-size:13px;color:var(--muted);padding:6px 4px}
+.tour-h{font-size:19px;margin:0 0 10px;letter-spacing:-.3px;line-height:1.35}
+.tl{display:flex;gap:10px;align-items:flex-start;margin:11px 0}.tl>i{font-style:normal;flex:none;width:24px;height:24px;border-radius:50%;background:var(--chip);color:var(--ink);display:grid;place-items:center;font-size:12px;font-weight:800}.tl b{font-size:14.5px}.tl .small{line-height:1.45;margin-top:1px}
+.tour-demo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0}
+.tour-badges{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding:12px;background:var(--chip);border-radius:14px}.tour-badges>div{display:flex;align-items:center;gap:10px}.tour-badges .badge{flex:none}
+.tour-check{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px;font-weight:700;font-size:14px}
+.tour-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}.tour-next{margin:0;width:auto;padding:13px 34px;justify-content:center}
+.tour .ab{margin:6px 0 10px}
+
+.tl-link{width:100%;text-align:left;border-radius:12px;padding:8px;margin:4px 0;background:var(--chip);align-items:center}.tl-link>div{flex:1;min-width:0}.tl-link .chev{flex:none;font-size:20px;color:var(--muted)}
+#sheet:focus{outline:none}
+.tl-link>i{background:var(--card)}
